@@ -2,32 +2,33 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import store from './store';
 
-const useStore =()=>{
-    const [state,setState] =useState(store.getState())
-    useEffect(()=>store.subscribe(setState),[])
+const useStore = (selector = (state) => state) => {
+  const [state, setState] = useState(selector(store.getState()))
+  console.log('usestore');
+  useEffect(() => store.subscribe((state) => setState(selector(state))), [])
 
-    return state
+  return state
 }
 
+console.log(store);
+const IncrementValue = ({ item }) => (<button onClick={() => {
+
+  const state = store.getState()
+
+  store.setState({ ...state, [item]: state[item] + 1 })
+
+
+}}>
+  Increment {item}
+</button>)
+
+
+const DisplayValue = ({ item }) => (<div>
+  {item} :{useStore(state => state[item])[item]}
+</div>)
+
+
 function State() {
-
-  const IncrementValue = ({ item }) => (<button onClick={() => { 
-
-    const state = store.getState()
-    console.log(state,item);
-    store.setState({ ...state, [item]: state[item] + 1 })
-    
-
-  }}>
-    Increment {item}
-  </button>)
-
-
-  const DisplayValue = ({ item }) => (<div>
-    {item} :{useStore()[item]}
-  </div>)
-    
-  
 
 
 
@@ -42,7 +43,7 @@ function State() {
       <IncrementValue item="value2" />
       <DisplayValue item="value2" />
 
-      
+
 
     </div>
   );
